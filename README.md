@@ -357,7 +357,17 @@ In this final section of the project, you will construct a model and make a pred
 
 **Answer: **
 
-The Grid Search algorithm allows for an indepth search of the hyperparameter's subspace. It is conducted by assigning relevant/specific performance metrics that are determined by the user.
+The Grid Search algorithm allows for an indepth search of the hyperparameter's subspace. It is conducted by assigning relevant/specific performance metrics that are determined by the user. Initially, $n$ models are created, where $n$ is the number of hyperparameter combinations. The combination with the highest score is then selected. 
+
+$C$ is the soft margin cost parameter (misclassification cost), and $\gamma$ (gamma) is the Gaussian radial basis function (Gaussian kernal) parameter. The "ideal" values for these parameters are typically discovered using grid search. 
+
+A visualization is provided below:
+![image.png](https://github.com/Ohara124c41/MLND-Predicting_Boston_Housing_Pricing/blob/master/images/02p4O.png?raw=true)
+
+Ref: [stackexchange](https://stats.stackexchange.com/questions/208449/hyper-parameter-optimization-grid-search-issues)
+
+As can be seen up the antidiagonal, certain hyperparameter combinations lead to a higher validation accuracy.
+
 
 Grid search is used to methodically conduct path planning and decision making. As such, parameter tuning allows for an improved performance, along with various flavors of grid search based on how much detail is required. More specifically, these models lie on a grid. Each one is trained and then evaluted with cross-validation (described below) resulting in the optimal model being selected.
 
@@ -373,13 +383,19 @@ As an example, grid search is often used with Support Vector Machines (SVM) in w
 
 **Answer: **
 
-As the name implies, the k-fold cross-validation training technique slices (partitions) the sample in to k-number of subsamples of equal size. An estimation is returned based on the average of the results ($n=k$).
+As the name implies, the k-fold cross-validation training technique slices (partitions) the sample in to k-number of subsamples of equal size. k-1 subsets are used to train the data and with the remaining subset/fold used as test data. An estimation is returned based on the average of the results ($n=k$), which is utilized in the finalization of the model and then tested against the test set.
+
+A simple visualization is shown below:
+![alt text](https://github.com/Ohara124c41/MLND-Predicting_Boston_Housing_Pricing/blob/master/images/1_J2B_bcbd1-s1kpWOu_FZrg.png?raw=true)
+
+Ref: [towardsdatascience](https://towardsdatascience.com/train-test-split-and-cross-validation-in-python-80b61beca4b6)
 
 One benefit of using this technique is that each observation is only used once. K-fold is also a non-exhaustive flavor of cross validation, and therefore not as computationally burdensome. However, k values need to be of a size (NB: $k = 10$ is a common initial value), as accuracy can be lost or computational time can increase.
 
 NB: k-fold needs to be used with IID random variables.
 
-Ref: http://scikit-learn.org/stable/modules/cross_validation.html#cross-validation 
+Ref: [scikit-learn](http://scikit-learn.org/stable/modules/cross_validation.html#cross-validation)
+
 
 ### Implementation: Fitting a Model
 Your final implementation requires that you bring everything together and train a model using the **decision tree algorithm**. To ensure that you are producing an optimized model, you will train the model using the grid search technique to optimize the `'max_depth'` parameter for the decision tree. The `'max_depth'` parameter can be thought of as how many questions the decision tree algorithm is allowed to ask about the data before making a prediction. Decision trees are part of a class of algorithms called *supervised learning algorithms*.
@@ -458,7 +474,11 @@ print("Parameter 'max_depth' is {} for the optimal model.".format(reg.get_params
 
 ** Hint: ** The answer comes from the output of the code snipped above.
 
-**Answer: ** Parameter `'max_depth'` is 4 for the optimal model.
+**Answer: ** 
+
+"Parameter `'max_depth'` is 4 for the optimal model."
+
+Based on the personal prediction of a depth of either four or five, the estimation is accurate. 
 
 
 ### Question 10 - Predicting Selling Prices
@@ -493,9 +513,25 @@ for i, price in enumerate(reg.predict(client_data)):
 
 **Answer: **
 
-Based on the results of the optimized model, I would suggest each client to sale their house at the recommended value, under a few assumptions.
+Recall the definitions and relationships for the features that are provided in the table:
 
-- The client needs to sale their house quickly
+- Client 1 - `RM=5`, `LSTAT=17`, and `PTRATIO=15`. 
+- Client 2 - `RM=4`, `LSTAT=32`, and `PTRATIO=22`. 
+- Client 3 - `RM=8`, `LSTAT=3`, and `PTRATIO=12`. 
+
+Making comparisons will assist in our justifications for determining if the prices seem reasonable.
+
+1) Client 2 has the lowest `RM`, highest `LSTAT`, and highest `PTRATIO` of the three. This would mean that this house is the least valuable. Furthermore, the differences between the `LSTAT` and `PTRATIO` of Client 1 (the next closest value) are quite large. Upon inspection, the `LSTAT` of Client 2 is nearly a 100% increase and the `PTRATIO` is a 50% increase. Therefore, Client 1's house being a nearly half of the value of Client 2 is reasonable.
+
+2) Client 3 is the inverse of Client 2 in terms of feature values. Client 3 has twice as many rooms (100% increase), half as many students to teachers (50% decrease) and a fractional percentage in terms of the neighborhood poverty level. Without even considering the `RM` and `PTRATIO` values, knowing the neighborhood has approximately 97% of its community living *above* the poverty level, it only makes sense that this house would be quite valuable. 
+
+Therefore, based on the results of the optimized model (and feature selection), I would suggest each client sell their house at the recommended value.
+
+---
+
+However, there are a few additional assumptions that can be made (which are outside of the scope of the project) in terms of understanding client behavior:
+
+- The client needs to sell their house quickly
 - This information matches data trends from previous years
 - There is an imminent threat of a predicted market crash
 
@@ -503,9 +539,9 @@ The reason for these assumptions is related to the socio-cultural environment of
 
 In general, housing prices are on the rise in Boston, and it would be more beneficial for the owner to view their home as an investment over a retail transaction. 
 
-Ref: http://www.residentialgroup.com/boston-housing-market-2018-outlook/
+Ref: [residentialgroup](http://www.residentialgroup.com/boston-housing-market-2018-outlook/)
 
-Based on the number of rooms, poverty level, and student-teacher ratio for 1978, these prices are fair. However, while being outside of the scope of this project, I would currently recommend the client's to not sell their houses at all. A larger amount of revenue can be generated, while keeping the house, if the rooms were rented out via Airbnb. The target stakeholders would be international university students, persons relocating for technological careers, and entrepreneurs.
+Based on the number of rooms, poverty level, and student-teacher ratio for 1978, these prices are fair. However, I would currently recommend the client's to not sell their houses. A larger amount of revenue can be generated while keeping ownership of the house if the rooms were rented out via Airbnb. The target stakeholders would be international university students, persons relocating for technological careers, and entrepreneurs.
 
 ### Sensitivity
 An optimal model is not necessarily a robust model. Sometimes, a model is either too complex or too simple to sufficiently generalize to new data. Sometimes, a model could use a learning algorithm that is not appropriate for the structure of the data given. Other times, the data itself could be too noisy or contain too few samples to allow a model to adequately capture the target variable — i.e., the model is underfitted. 
@@ -553,23 +589,23 @@ $$ \% Difference = \frac{(\Delta{V})100}{\frac {\sum V}{2}}$$
 $$\frac{(\$420,622.22 - \$351,577.61)*100}{\frac {(\$420,622.22 + \$351,577.61)}{2}} = 17.88\%$$
 
 
-1) How relevant today is data that was collected from 1978? How important is inflation?
+##### 1) How relevant today is data that was collected from 1978? How important is inflation?
 
 Without delving into too much reasoning, the data is irrelevant for today's market. In fact, data from only five years ago (or from 2008) is likely also irrelevant. Inflation, in this example, is only important when retrospectively viewing how much the value of the house would be in comparison to a certain time period.
 
 Recall, the `MEDV` feature is a time-scaled value that helps estimate when the value difference between two objects based on their features.
 
-2) Are the features present in the data sufficient to describe a home? Do you think factors like quality of appliances in the home, square feet of the plot area, presence of pool or not etc should factor in?
+##### 2) Are the features present in the data sufficient to describe a home? Do you think factors like quality of appliances in the home, square feet of the plot area, presence of pool or not etc should factor in?
 
 In real life, these factors absolutely impact the selling price of a home, and therefore should be taken into consideration. Again, outside of the scope of this project, these features might increase the "potential value" of a house, but will not necessarily increase the market value. Customers have "purchase power" (PP) which is dependent on "willingness-to-buy." 
 
 For example, intuitively, adding a nice pool to a residence would increase the value. However, clients might have children or pet (and thus the pool is a hazard), not be interested in maintenance (pools are expensive), or plan to have a full-yard garden. Thus, a pool is not an asset to these stakeholders, but in fact, a liability. 
 
-3) Is the model robust enough to make consistent predictions?
+##### 3) Is the model robust enough to make consistent predictions?
 
 The model is robust enough under the assumption that future clients are primarily interested in the evaluated features. In reality, models should utilize relevant information and be updated regularly. Thus far, realtors and brokers are still required to make predictions. Lastly, marketing is an extremely important tool for pricing, which can make predictions incorrect (the houses sell better due to targeted marketing, or the houses sell more poorly due to a lack of targeted marketing).
 
-4) Would data collected in an urban city like Boston be applicable in a rural city?
+##### 4) Would data collected in an urban city like Boston be applicable in a rural city?
 
 Considering urbanization is a growing megatrend, data collected in any urban area is not applicable to rural areas in general.
 
@@ -579,7 +615,7 @@ Some additional considerations:
 - Both urban and rural cities in different states, regions, and countries have very different characteristics. Each area should be evaluated based on the features, characteristics, and behavior of stakeholders in these areas.
 - Suburban areas are rising as the economic hubs in nearly all cities. These suburban cities then grow (and change due to logistics) which influences the "spectrum" of transitions from urban to rural areas. 
 
-5) Is it fair to judge the price of an individual home based on the characteristics of the entire neighborhood?
+##### 5) Is it fair to judge the price of an individual home based on the characteristics of the entire neighborhood?
 
 As always, we say "it depends." On one hand, a neighborhood has a large influence on the pricing values (min, mean, max) of a house. Conversely, the home value is also based on independent features (architecture style, proximately to other structures/transportation, history) that play a role in the stakeholder's willingness-to-buy.  
 
